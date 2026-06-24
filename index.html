@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auditoría de Negocio Digital — Detail Tattoo Miami</title>
+<style>
+  :root{
+    --bg:#0a0a0c;
+    --bg-elev:#13131a;
+    --bg-card:#1a1a22;
+    --border:#262630;
+    --text:#f2f2f5;
+    --text-dim:#8e8e9b;
+    --text-dim2:#6a6a78;
+    --accent:#7c5cff;
+    --accent-2:#22d3ee;
+    --warm:#ffb84d;
+    --good:#3ddc84;
+    --warn:#ffb84d;
+    --bad:#ff5566;
+    --critical:#ff2a55;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent-2);text-decoration:none}
+  a:hover{color:var(--accent)}
+
+  /* ===== Layout ===== */
+  .wrap{max-width:1200px;margin:0 auto;padding:48px 28px}
+  .toc-wrap{display:grid;grid-template-columns:240px 1fr;gap:48px}
+  @media(max-width:1000px){.toc-wrap{grid-template-columns:1fr}}
+  aside.toc{position:sticky;top:20px;align-self:start;padding:24px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;font-size:13.5px}
+  @media(max-width:1000px){aside.toc{position:relative;top:0}}
+  aside.toc h4{font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px;font-weight:600}
+  aside.toc ol{list-style:none;padding:0;margin:0;counter-reset:s}
+  aside.toc li{counter-increment:s;padding:6px 0;border-bottom:1px solid var(--border);position:relative;padding-left:30px}
+  aside.toc li:last-child{border-bottom:none}
+  aside.toc li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:6px;color:var(--accent);font-weight:700;font-size:11px}
+  aside.toc a{color:var(--text);font-size:13px}
+  aside.toc a:hover{color:var(--accent-2)}
+
+  /* ===== Hero ===== */
+  header.hero{padding:56px 36px;background:linear-gradient(135deg,#1a1a22 0%,#0f0f14 60%,#161020 100%);border:1px solid var(--border);border-radius:24px;position:relative;overflow:hidden;margin-bottom:32px}
+  header.hero::before{content:"";position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(124,92,255,0.18) 0%,transparent 60%);pointer-events:none}
+  .badge{display:inline-block;padding:6px 14px;background:rgba(124,92,255,0.12);color:var(--accent);border:1px solid rgba(124,92,255,0.3);border-radius:999px;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:18px}
+  h1{font-size:44px;font-weight:800;letter-spacing:-0.02em;line-height:1.1;margin-bottom:14px}
+  h1 .accent{background:linear-gradient(90deg,var(--accent) 0%,var(--accent-2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:var(--text-dim);font-size:17px;max-width:760px}
+  .meta-bar{display:flex;flex-wrap:wrap;gap:18px;margin-top:24px;padding-top:24px;border-top:1px solid var(--border);font-size:13px;color:var(--text-dim)}
+  .meta-bar b{color:var(--text);font-weight:600}
+
+  /* ===== Sections ===== */
+  section{margin-top:48px;scroll-margin-top:20px}
+  h2{font-size:28px;font-weight:700;letter-spacing:-0.015em;margin-bottom:8px;display:flex;align-items:center;gap:14px}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:var(--accent);color:#fff;border-radius:10px;font-size:14px;font-weight:800}
+  h2 + p.lead{color:var(--text-dim);font-size:15px;margin-bottom:22px;max-width:820px}
+  h3{font-size:18px;font-weight:700;margin-bottom:10px;letter-spacing:-0.005em}
+
+  /* ===== Score ===== */
+  .score-grid{display:grid;grid-template-columns:1fr 2fr;gap:20px}
+  @media(max-width:780px){.score-grid{grid-template-columns:1fr}}
+  .score-card{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:30px;text-align:center;position:relative;overflow:hidden}
+  .score-num{font-size:90px;font-weight:800;letter-spacing:-0.04em;background:linear-gradient(135deg,#ff5566 0%,#ffb84d 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+  .score-of{color:var(--text-dim);font-size:18px;margin-top:4px}
+  .verdict{margin-top:18px;padding:12px 16px;background:rgba(255,184,77,0.1);border:1px solid rgba(255,184,77,0.25);border-radius:12px;color:#ffd49e;font-size:13.5px;font-weight:600}
+  .breakdown{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:26px}
+  .bar-row{margin-bottom:14px}
+  .bar-row:last-child{margin-bottom:0}
+  .bar-label{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px}
+  .bar-label b{font-weight:600}
+  .bar-label span{color:var(--text-dim)}
+  .bar{height:8px;background:#0a0a10;border-radius:99px;overflow:hidden;border:1px solid var(--border)}
+  .bar-fill{height:100%;border-radius:99px;transition:width 0.4s}
+  .b-bad{background:linear-gradient(90deg,#ff2a55,#ff5566)}
+  .b-warn{background:linear-gradient(90deg,#ffb84d,#ffd166)}
+  .b-good{background:linear-gradient(90deg,#3ddc84,#5af0a5)}
+
+  /* ===== Cards ===== */
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:14px}
+  .card h3{margin-bottom:10px}
+  .card p{color:var(--text-dim);font-size:14.5px;margin-bottom:10px}
+  .card ul{padding-left:20px;font-size:14px;color:var(--text-dim)}
+  .card ul li{margin-bottom:6px}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:780px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+  /* ===== Pills & alerts ===== */
+  .pill{display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;margin-right:6px;vertical-align:middle}
+  .pill.bad{background:rgba(255,42,85,0.15);color:#ff8095;border:1px solid rgba(255,42,85,0.3)}
+  .pill.warn{background:rgba(255,184,77,0.15);color:#ffcc7a;border:1px solid rgba(255,184,77,0.3)}
+  .pill.good{background:rgba(61,220,132,0.15);color:#6ee5a4;border:1px solid rgba(61,220,132,0.3)}
+  .pill.info{background:rgba(34,211,238,0.15);color:#7fdfee;border:1px solid rgba(34,211,238,0.3)}
+
+  .alert{border-radius:14px;padding:18px 22px;margin:14px 0;display:flex;gap:14px;align-items:flex-start}
+  .alert .icon{font-size:18px;flex-shrink:0;font-weight:800;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:8px}
+  .alert.critical{background:rgba(255,42,85,0.08);border:1px solid rgba(255,42,85,0.3)}
+  .alert.critical .icon{background:rgba(255,42,85,0.2);color:#ff8095}
+  .alert.warn{background:rgba(255,184,77,0.08);border:1px solid rgba(255,184,77,0.3)}
+  .alert.warn .icon{background:rgba(255,184,77,0.2);color:#ffcc7a}
+  .alert.info{background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.3)}
+  .alert.info .icon{background:rgba(34,211,238,0.2);color:#7fdfee}
+  .alert.good{background:rgba(61,220,132,0.08);border:1px solid rgba(61,220,132,0.3)}
+  .alert.good .icon{background:rgba(61,220,132,0.2);color:#6ee5a4}
+  .alert h4{font-size:15.5px;margin-bottom:5px;font-weight:700}
+  .alert p{font-size:13.5px;color:var(--text-dim)}
+
+  /* ===== Tables ===== */
+  table{width:100%;border-collapse:collapse;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;font-size:13.5px;margin-top:8px}
+  th{background:#0f0f14;text-align:left;padding:13px 14px;font-size:11.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);font-weight:600;border-bottom:1px solid var(--border)}
+  td{padding:13px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td code{font-size:12px;color:var(--warm);background:#0a0a10;padding:1px 6px;border-radius:4px}
+
+  /* ===== Customer journey diagram ===== */
+  .journey{margin-top:24px}
+  .journey-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:18px;position:relative}
+  @media(max-width:780px){.journey-row{grid-template-columns:1fr 1fr;gap:10px}}
+  .journey-step{padding:16px 12px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;text-align:center;position:relative;min-height:120px;display:flex;flex-direction:column;justify-content:center}
+  .journey-step.missing{border:1px dashed rgba(255,42,85,0.4);background:rgba(255,42,85,0.05);opacity:0.85}
+  .journey-step.weak{border-color:rgba(255,184,77,0.4);background:rgba(255,184,77,0.05)}
+  .journey-step.ok{border-color:rgba(61,220,132,0.3);background:rgba(61,220,132,0.05)}
+  .journey-step .lbl{font-size:10.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;font-weight:600}
+  .journey-step .what{font-size:13px;color:var(--text);font-weight:600;margin-bottom:4px}
+  .journey-step .note{font-size:11.5px;color:var(--text-dim2)}
+  .journey-step::after{content:"→";position:absolute;right:-12px;top:50%;transform:translateY(-50%);color:var(--text-dim2);font-size:18px;z-index:2}
+  .journey-row .journey-step:last-child::after{display:none}
+  @media(max-width:780px){.journey-step::after{display:none}}
+
+  /* ===== Quickwins ===== */
+  .quickwin{background:linear-gradient(180deg,var(--bg-card) 0%,var(--bg-elev) 100%);border:1px solid var(--border);border-radius:16px;padding:22px 24px 22px 70px;margin-bottom:12px;position:relative}
+  .quickwin::before{content:"⚡";position:absolute;left:22px;top:22px;width:30px;height:30px;background:var(--warm);color:#000;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800}
+  .quickwin h4{font-size:16px;font-weight:700;margin-bottom:5px}
+  .quickwin p{color:var(--text-dim);font-size:14px;margin-bottom:8px}
+
+  /* ===== Compare table styling ===== */
+  td.you{background:rgba(124,92,255,0.06)}
+  td strong{color:var(--text)}
+
+  /* ===== Mockup rewrite ===== */
+  .rewrite{background:#0a0a10;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:10px 0;font-size:14px}
+  .rewrite .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;color:var(--accent);font-weight:700;margin-bottom:5px}
+  .rewrite .before{color:#ff8095;text-decoration:line-through;opacity:0.85}
+  .rewrite .after{color:var(--good);font-weight:600;margin-top:4px}
+
+  footer{margin-top:64px;padding:30px 0;border-top:1px solid var(--border);color:var(--text-dim);font-size:13px;text-align:center}
+
+  @media print{
+    body{background:#fff;color:#000}
+    aside.toc{display:none}
+    .toc-wrap{grid-template-columns:1fr}
+    .card,.score-card,.breakdown,.alert,.rewrite,.quickwin,.journey-step{break-inside:avoid;page-break-inside:avoid}
+    header.hero{background:#fff;color:#000;border-color:#ccc}
+    h1{color:#000}
+    h1 .accent{color:#5d2;background:none;-webkit-text-fill-color:#5d2}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="badge">Auditoría Digital de Negocio · Informe Ejecutivo</span>
+  <h1>Detail Tattoo Miami — <span class="accent">un buen estudio que parece invisible para el cliente que aún no le conoce</span></h1>
+  <p class="sub">Análisis 360º del negocio: web, redes, oferta y precios, ads, customer journey, reputación, Google Business y competencia. Versión condensada de los hallazgos, lo que está fallando estratégicamente y un plan de acción priorizado.</p>
+  <div class="meta-bar">
+    <span><b>Negocio:</b> Detail Tattoo Shop</span>
+    <span><b>Sector:</b> Tatuajes + Piercings</span>
+    <span><b>Ubicación:</b> Calle Ocho · Little Havana · Miami FL</span>
+    <span><b>Founder:</b> Yordan</span>
+    <span><b>Activo desde:</b> 2018 (7 años)</span>
+    <span><b>Web:</b> detailtattoo.com</span>
+    <span><b>Fecha:</b> 24 jun 2026</span>
+  </div>
+</header>
+
+<div class="toc-wrap">
+
+<aside class="toc">
+  <h4>Índice</h4>
+  <ol>
+    <li><a href="#resumen">Resumen ejecutivo</a></li>
+    <li><a href="#score">Puntuación global</a></li>
+    <li><a href="#problemas">Problemas críticos</a></li>
+    <li><a href="#web">Web y UX</a></li>
+    <li><a href="#oferta">Oferta y precios</a></li>
+    <li><a href="#redes">Redes sociales</a></li>
+    <li><a href="#ads">Anuncios Meta Ads</a></li>
+    <li><a href="#copy">Copy y comunicación</a></li>
+    <li><a href="#journey">Customer journey</a></li>
+    <li><a href="#google">Google Business</a></li>
+    <li><a href="#reputacion">Reputación</a></li>
+    <li><a href="#contenido">Contenido / SEO</a></li>
+    <li><a href="#competencia">Competencia</a></li>
+    <li><a href="#incoherencias">Incoherencias</a></li>
+    <li><a href="#plan">Plan de acción</a></li>
+    <li><a href="#quickwins">Quick wins</a></li>
+  </ol>
+</aside>
+
+<main>
+
+<section id="resumen">
+  <h2><span class="num">1</span> Resumen ejecutivo</h2>
+  <div class="card">
+    <p style="font-size:15.5px;color:var(--text);line-height:1.7"><b style="color:var(--accent-2)">Dónde está hoy:</b> Detail Tattoo lleva 7 años operativo en Calle Ocho — una de las mejores ubicaciones de Miami para captar tráfico mixto (local hispano + turismo). Tiene un founder visible (Yordan), 11K seguidores en Instagram, presencia en Booksy con precios públicos, +1500 tatuajes y +1000 piercings hechos. La base operativa es sólida.</p>
+    <p style="font-size:15.5px;color:var(--text);line-height:1.7;margin-top:14px"><b style="color:var(--bad)">Por qué no crece más:</b> el negocio está atrapado en un único canal de captación — Instagram orgánico. No hace ads de pago. Solo tiene 1 reseña en Booksy a pesar de los +450 clientes que reclama. No tiene tracking en la web (ni Pixel ni GA4), así que no sabe de dónde viene su tráfico ni puede optimizarlo. La web no muestra precios pero Booksy sí. La oferta no está empaquetada (cada cliente negocia desde cero) y no existe ningún sistema de retención post-venta. Compite contra estudios como Ocho Placas (desde 2001) y Piajas Ink — ambos en la misma calle, con mejor posicionamiento online.</p>
+    <p style="font-size:15.5px;color:var(--text);line-height:1.7;margin-top:14px"><b style="color:var(--good)">La oportunidad:</b> con cambios concretos en 30 días (formalizar reseñas, montar Google Business, instalar tracking, lanzar primer ad de retargeting y crear un programa de fidelización), este negocio puede triplicar la captación predecible y dejar de depender exclusivamente del algoritmo de Instagram. El producto ya funciona — falta el motor comercial.</p>
+  </div>
+</section>
+
+<section id="score">
+  <h2><span class="num">2</span> Puntuación global</h2>
+  <div class="score-grid">
+    <div class="score-card">
+      <div class="score-num">38</div>
+      <div class="score-of">/ 100</div>
+      <div class="verdict">Negocio operativo con producto OK, infraestructura comercial muy por debajo de su potencial real</div>
+    </div>
+    <div class="breakdown">
+      <h3 style="margin-bottom:14px">Desglose por área</h3>
+      <div class="bar-row"><div class="bar-label"><b>Web y UX</b><span>45 / 100</span></div><div class="bar"><div class="bar-fill b-warn" style="width:45%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>SEO básico</b><span>20 / 100</span></div><div class="bar"><div class="bar-fill b-bad" style="width:20%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Redes sociales</b><span>55 / 100</span></div><div class="bar"><div class="bar-fill b-warn" style="width:55%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Anuncios (Meta Ads)</b><span>5 / 100</span></div><div class="bar"><div class="bar-fill b-bad" style="width:5%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Copy y comunicación</b><span>40 / 100</span></div><div class="bar"><div class="bar-fill b-warn" style="width:40%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Oferta y precios</b><span>55 / 100</span></div><div class="bar"><div class="bar-fill b-warn" style="width:55%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Customer journey</b><span>25 / 100</span></div><div class="bar"><div class="bar-fill b-bad" style="width:25%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Google Business</b><span>15 / 100</span></div><div class="bar"><div class="bar-fill b-bad" style="width:15%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Reputación visible</b><span>35 / 100</span></div><div class="bar"><div class="bar-fill b-bad" style="width:35%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Contenido / Blog</b><span>10 / 100</span></div><div class="bar"><div class="bar-fill b-bad" style="width:10%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Coherencia de marca</b><span>50 / 100</span></div><div class="bar"><div class="bar-fill b-warn" style="width:50%"></div></div></div>
+      <div class="bar-row"><div class="bar-label"><b>Posición vs competencia</b><span>40 / 100</span></div><div class="bar"><div class="bar-fill b-warn" style="width:40%"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="problemas">
+  <h2><span class="num">3</span> Problemas críticos</h2>
+  <p class="lead">Los 6 puntos que explican casi todo lo demás. Si arreglas estos, sube la nota global automáticamente.</p>
+
+  <div class="alert critical">
+    <div class="icon">!</div>
+    <div>
+      <h4>1. Solo 1 reseña en Booksy con +450 clientes reclamados</h4>
+      <p>Aunque el contador del slider diga "+450 happy customers", la prueba visible al público es solo 1 reseña pública en Booksy. Esa desconexión genera desconfianza al cliente nuevo. No tienes sistema de pedir reseña tras cada servicio.</p>
+    </div>
+  </div>
+
+  <div class="alert critical">
+    <div class="icon">!</div>
+    <div>
+      <h4>2. No hay Google Business (o si lo hay, no se le da uso)</h4>
+      <p>En un negocio local como un tattoo shop, Google Maps es el canal #1 de captación gratuita. No aparece en la web link a Google Business ni rating visible. Cada cliente nuevo que busca "tattoo shop Calle Ocho Miami" te encuentra a Ocho Placas, Piajas Ink y Empire Ink antes que a ti.</p>
+    </div>
+  </div>
+
+  <div class="alert critical">
+    <div class="icon">!</div>
+    <div>
+      <h4>3. Cero tracking instalado en la web</h4>
+      <p>Sin Meta Pixel, sin GA4, sin Tag Manager. No sabes cuánta gente entra, qué páginas ve, ni cuánto convierte. Estás operando a ciegas. Ya cubierto en detalle en la auditoría Meta Ads.</p>
+    </div>
+  </div>
+
+  <div class="alert critical">
+    <div class="icon">!</div>
+    <div>
+      <h4>4. Cero anuncios activos en Meta</h4>
+      <p>Sin ads, dependes 100% del crecimiento orgánico de Instagram. Eso te ata al algoritmo. Cualquier competidor que destine $300/mes te adelanta sin esfuerzo.</p>
+    </div>
+  </div>
+
+  <div class="alert critical">
+    <div class="icon">!</div>
+    <div>
+      <h4>5. Web sin precios, Booksy con precios — incoherencia de canal</h4>
+      <p>En detailtattoo.com no aparece ningún precio. En Booksy sí ($80 lóbulo, $50 hélix, $200 palm tattoo, $700 cuarto de manga, etc.). El cliente que llega vía web tiene que clicar fuera, navegar a Booksy, y entonces compara con la competencia que sí muestra precios al instante. Pierdes clientes en el paso intermedio.</p>
+    </div>
+  </div>
+
+  <div class="alert critical">
+    <div class="icon">!</div>
+    <div>
+      <h4>6. Cero estrategia post-venta — no hay retención</h4>
+      <p>Cada cliente es un evento aislado. No hay email de seguimiento, no hay invitación a nuevo piercing/tattoo, no hay programa de referidos formal, no hay sistema de "trae a un amigo, cobra menos tú". El cliente que ya pagó $700 por un cuarto de manga es 10× más probable de volver que uno nuevo — pero no estás cultivando esa repetición.</p>
+    </div>
+  </div>
+</section>
+
+<section id="web">
+  <h2><span class="num">4</span> Web y UX</h2>
+  <p class="lead">Análisis técnico y de conversión de detailtattoo.com.</p>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Lo que está bien <span class="pill good">OK</span></h3>
+      <ul>
+        <li>HTTPS correcto, estructura clara</li>
+        <li>Slider con estadísticas reales (+1500 / +1000 / +450)</li>
+        <li>Founder visible (Yordan) en sección About</li>
+        <li>Información de contacto completa (teléfono, email, dirección)</li>
+        <li>Galería de trabajos presente</li>
+        <li>Horario amplio comunicado</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Lo que falla <span class="pill bad">A corregir</span></h3>
+      <ul>
+        <li>Sin Meta Pixel ni Google Analytics — tráfico desperdiciado</li>
+        <li>Sin Schema.org LocalBusiness — invisible en Google Maps</li>
+        <li>CTA "Book an Appointment" sale a kotizar.com — pierde conversión</li>
+        <li>Sin formulario propio en la web</li>
+        <li>Sin botón WhatsApp flotante (móvil = 70%+ del tráfico)</li>
+        <li>Sin link a Instagram ni Facebook desde la web</li>
+        <li>Solo en inglés (Calle Ocho ≈ 60% hispano)</li>
+        <li>Sin testimonios reales (solo el slider "99,99% RATINGS" que suena inventado)</li>
+        <li>Sin precios visibles</li>
+        <li>Sin chat ni cookies banner</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="oferta">
+  <h2><span class="num">5</span> Oferta y precios</h2>
+  <p class="lead">Lo que vendes, a qué precio, y cómo lo presentas en cada canal.</p>
+
+  <table>
+    <thead><tr><th>Servicio</th><th>Precio Booksy</th><th>Duración</th><th>Visible en web</th><th>Posicionamiento</th></tr></thead>
+    <tbody>
+      <tr><td>Lóbulo (par)</td><td><strong>$80</strong></td><td>~20 min</td><td><span class="pill bad">No</span></td><td>Mid-range</td></tr>
+      <tr><td>Hélix</td><td><strong>$50</strong></td><td>~20 min</td><td><span class="pill bad">No</span></td><td>Low-mid</td></tr>
+      <tr><td>Nariz (nostril)</td><td><strong>$50</strong></td><td>~20 min</td><td><span class="pill bad">No</span></td><td>Low-mid</td></tr>
+      <tr><td>Ombligo</td><td><strong>$60</strong></td><td>~30 min</td><td><span class="pill bad">No</span></td><td>Mid-range</td></tr>
+      <tr><td>Tatuaje simple</td><td><strong>desde $80</strong></td><td>30-60 min</td><td><span class="pill bad">No</span></td><td>Entry</td></tr>
+      <tr><td>Tatuaje palm-size</td><td><strong>desde $200</strong></td><td>1-2h</td><td><span class="pill bad">No</span></td><td>Mid</td></tr>
+      <tr><td>Cuarto de manga</td><td><strong>desde $700</strong></td><td>4-6h</td><td><span class="pill bad">No</span></td><td>Premium</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert warn" style="margin-top:16px">
+    <div class="icon">!</div>
+    <div>
+      <h4>Hallazgo crítico — la oferta no está empaquetada</h4>
+      <p>Cada precio es "desde X" — flexible, individual, sin paquetes. Eso genera dos problemas: (1) el cliente nunca sabe el precio final antes de venir, lo cual frena la decisión, y (2) no puedes hacer ads con un anchor price claro. <b>Recomendación:</b> crear 3 paquetes cerrados — <i>"First Tattoo Bundle" ($120 — pieza simple + cuidados + foto profesional), "Couples Day" (2 tatuajes a juego, ahorro $50), "Curated Ear Project" (3 piercings + joya inicial, $180)</i>. Algo concreto y fácil de comunicar.</p>
+    </div>
+  </div>
+</section>
+
+<section id="redes">
+  <h2><span class="num">6</span> Redes sociales</h2>
+  <p class="lead">Presencia, coherencia y calidad de cada canal.</p>
+
+  <table>
+    <thead><tr><th>Canal</th><th>Handle</th><th>Estado</th><th>Visible en web</th><th>Hallazgo</th></tr></thead>
+    <tbody>
+      <tr><td>Instagram</td><td>@detail_tattooshop</td><td><span class="pill good">Activo · 11K</span></td><td><span class="pill bad">No</span></td><td>Tu canal más fuerte. Falta link en la web — incoherencia grave.</td></tr>
+      <tr><td>Facebook</td><td>page id 286812202250380</td><td><span class="pill warn">Activo pero poco uso</span></td><td><span class="pill bad">No</span></td><td>Página existe pero no se enlaza desde web ni se usa para captación.</td></tr>
+      <tr><td>TikTok</td><td>@detail_tattooshop</td><td><span class="pill warn">Activo</span></td><td><span class="pill good">Sí</span></td><td>Única red enlazada desde la web. Bien que esté, pero no debería ser la única.</td></tr>
+      <tr><td>YouTube</td><td>—</td><td><span class="pill bad">No existe</span></td><td>—</td><td>Oportunidad: vídeos largos de proceso + tutoriales de cuidado del tatuaje (SEO Google).</td></tr>
+      <tr><td>Google Business</td><td>—</td><td><span class="pill bad">No verificado / sin info</span></td><td><span class="pill bad">No</span></td><td>Hueco más grande del negocio (ver sección 10).</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert info" style="margin-top:16px">
+    <div class="icon">i</div>
+    <div>
+      <h4>Diagnóstico de Instagram</h4>
+      <p>11K seguidores está bien para un estudio local pero es <b>cifra estancada si lleva tiempo así</b>. Lo importante no es el follower count — es el ratio de DMs preguntando por citas / engagement / saves. Con tu volumen real (+450 clientes en 7 años ≈ 5 clientes/semana) tendrías que estar saturado de mensajes. Si no es así, el contenido no está optimizado para "DM intent".</p>
+    </div>
+  </div>
+</section>
+
+<section id="ads">
+  <h2><span class="num">7</span> Anuncios — Meta Ads</h2>
+  <div class="card">
+    <p style="font-size:15px"><span class="pill bad">Cero ads activos</span> Confirmado tras consultar la Biblioteca de Anuncios de Meta. Sin campañas activas en este momento.</p>
+    <p style="margin-top:12px">Para un negocio local en sector saturado (Miami tattoo scene) NO tener ads es una decisión, no un descuido. Decisión que tiene sentido SI: (a) Instagram orgánico te genera suficientes citas para tu capacidad real, o (b) prefieres crecer lento pero sin "endeudarte" en Meta. Ambas son posturas defendibles.</p>
+    <p style="margin-top:12px"><b>Pero:</b> sin tracking instalado en la web, tampoco estás aprovechando el tráfico orgánico que SÍ llega — no le haces retargeting, no construyes audiencias, no aprendes del comportamiento. Mínimo recomendado <i>incluso si no piensas hacer ads de momento:</i> instalar Pixel + GA4 hoy mismo. Cuando un día decidas hacer ads, ya tendrás 6-12 meses de data acumulada. <a href="#plan">Ver plan de acción ↓</a></p>
+  </div>
+  <p style="font-size:13px;color:var(--text-dim);margin-top:12px"><i>Análisis exhaustivo del setup Meta Ads (5 anuncios listos para lanzar, audiencias, presupuesto): ver el informe independiente <b>auditoria-meta-ads-detail-tattoo</b>.</i></p>
+</section>
+
+<section id="copy">
+  <h2><span class="num">8</span> Copy y comunicación</h2>
+  <p class="lead">Cómo hablas a tu cliente. Coherencia entre canales.</p>
+
+  <div class="card">
+    <h3>El gran hallazgo: hablas de TI, no del cliente</h3>
+    <p>Headlines y subtítulos de la web ("We are a tattoo shop in Miami that has been focusing on customer satisfaction", "ARTISTS WITH EXPERIENCE", "99,99% RATINGS") son afirmaciones sobre el negocio. El cliente no ve qué gana él. Los CTAs ("BOOK AN APPOINTMENT") son funcionales pero fríos — no dan permiso emocional para hacer click.</p>
+
+    <div class="rewrite">
+      <div class="lbl">Antes (web actual)</div>
+      <div class="before">We are a tattoo shop in Miami that has been focusing on customer satisfaction</div>
+      <div class="lbl" style="margin-top:14px">Después (centrado en cliente)</div>
+      <div class="after">Diseñamos tu tatuaje contigo antes de tocar la piel. Si el boceto no te enamora, no pagas la cita.</div>
+    </div>
+
+    <div class="rewrite">
+      <div class="lbl">CTA actual</div>
+      <div class="before">BOOK AN APPOINTMENT</div>
+      <div class="lbl" style="margin-top:14px">Mejor alternativa</div>
+      <div class="after">Cuéntame tu idea por WhatsApp · Reserva tu consulta gratis · Diseña tu tattoo con Yordan</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Coherencia entre canales — desordenada</h3>
+    <ul>
+      <li>Web: inglés, tono corporativo</li>
+      <li>Instagram: bilingüe, tono cercano</li>
+      <li>TikTok: español + videos casuales</li>
+      <li>Booksy: descripción seca, sin alma</li>
+    </ul>
+    <p style="margin-top:12px">Cada canal habla con un "Detail Tattoo" diferente. Define un tone of voice único (recomendación: <i>cercano, latino-Miami, profesional sin acartonarse</i>) y aplícalo en TODO. Bajará la fricción cognitiva cuando un mismo cliente te ve en 3 sitios distintos.</p>
+  </div>
+</section>
+
+<section id="journey">
+  <h2><span class="num">9</span> Customer journey completo</h2>
+  <p class="lead">El recorrido entero del cliente — pre y post venta. Verde = funciona. Amarillo = débil. Rojo = roto o ausente.</p>
+
+  <div class="journey">
+    <div class="journey-row">
+      <div class="journey-step weak">
+        <div class="lbl">01 · Descubrimiento</div>
+        <div class="what">Instagram + boca a boca</div>
+        <div class="note">Google Maps invisible. Ads cero.</div>
+      </div>
+      <div class="journey-step weak">
+        <div class="lbl">02 · Primera visita</div>
+        <div class="what">detailtattoo.com</div>
+        <div class="note">Falta WhatsApp y precio.</div>
+      </div>
+      <div class="journey-step missing">
+        <div class="lbl">03 · Interés</div>
+        <div class="what">Sin testimonios / FAQ</div>
+        <div class="note">Sin respuesta a "¿dolerá?" ni "¿precio?".</div>
+      </div>
+      <div class="journey-step weak">
+        <div class="lbl">04 · Decisión</div>
+        <div class="what">Salta a Booksy / WhatsApp</div>
+        <div class="note">Fricción en el cambio de plataforma.</div>
+      </div>
+      <div class="journey-step ok">
+        <div class="lbl">05 · Compra</div>
+        <div class="what">Sesión en estudio</div>
+        <div class="note">Producto bien entregado. 5⭐ Booksy.</div>
+      </div>
+      <div class="journey-step missing">
+        <div class="lbl">06 · Post-venta</div>
+        <div class="what">No existe</div>
+        <div class="note">Sin email, sin seguimiento.</div>
+      </div>
+    </div>
+    <div class="journey-row" style="grid-template-columns:repeat(3,1fr);max-width:60%;margin:0 auto">
+      <div class="journey-step missing">
+        <div class="lbl">07 · Reseña</div>
+        <div class="what">No se pide</div>
+        <div class="note">Solo 1 reseña en Booksy con +450 clientes.</div>
+      </div>
+      <div class="journey-step missing">
+        <div class="lbl">08 · Recompra</div>
+        <div class="what">No incentivada</div>
+        <div class="note">Cada cliente es evento aislado.</div>
+      </div>
+      <div class="journey-step missing">
+        <div class="lbl">09 · Referido</div>
+        <div class="what">Sin programa</div>
+        <div class="note">Pierdes el activo más caliente: cliente feliz.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert critical" style="margin-top:18px">
+    <div class="icon">!</div>
+    <div>
+      <h4>Lo más caro de toda la auditoría</h4>
+      <p>Tu mayor activo no es la web ni Instagram — son los +450 clientes que ya pagaron y se fueron contentos. Hoy no haces NADA con ellos. Cada vez que un cliente se va, "muere" como activo de marketing. Implementar incluso una versión mínima de los pasos 7-8-9 (email de "¿qué tal lo llevas?" 7 días después + pedir reseña Google + código de referido) puede subir el revenue 30-50% en 6 meses sin un dólar de ads.</p>
+    </div>
+  </div>
+</section>
+
+<section id="google">
+  <h2><span class="num">10</span> Google Business / Maps</h2>
+  <div class="card">
+    <p><span class="pill bad">Ficha no verificada visible / no encontrada en búsquedas</span></p>
+    <p>Tras buscar "Detail Tattoo Miami Google Maps" no aparece de forma clara una ficha completa con estrellas, fotos profesionales y respuestas a reseñas. Para un negocio local de tatuajes en Miami esto es el <b>error más caro</b> que se puede cometer — el 60-70% del tráfico de descubrimiento de tatuajes en una ciudad pasa por Google Maps ("tattoo shop near me", "tattoo Calle Ocho", "best piercing Miami").</p>
+    <p><b>Qué falta hacer (orden):</b></p>
+    <ol style="padding-left:20px;color:var(--text-dim);margin-top:8px">
+      <li>Reclamar la ficha de Google Business si existe sin verificar</li>
+      <li>Si no existe, crearla desde cero (15 min)</li>
+      <li>Subir 30-50 fotos profesionales: del estudio, de Yordan, de trabajos terminados</li>
+      <li>Categoría exacta: "Tattoo shop" + categoría secundaria "Body piercing studio"</li>
+      <li>Horarios sincronizados con la web</li>
+      <li>Descripción optimizada con keywords: "tattoo shop in Little Havana", "calle ocho tattoo", "custom tattoo Miami"</li>
+      <li>Pedir reseñas a TODOS los clientes activos (ver quick wins)</li>
+      <li>Responder a TODAS las reseñas — positivas con gracias personalizadas, negativas con disculpa pública + ofrecer arreglarlo</li>
+      <li>Posts semanales en Google Business (sí, también acepta posts como Instagram)</li>
+    </ol>
+  </div>
+</section>
+
+<section id="reputacion">
+  <h2><span class="num">11</span> Reputación</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Lo que se ve <span class="pill warn">Inconsistente</span></h3>
+      <p><b>Booksy:</b> 5.0⭐ pero solo 1 reseña pública</p>
+      <p><b>Yelp:</b> ficha presente con fotos, sin acceso a número claro de reseñas</p>
+      <p><b>Web:</b> reclama "99,99% RATINGS" — número inventado y resta credibilidad</p>
+      <p><b>Google:</b> sin presencia visible</p>
+    </div>
+    <div class="card">
+      <h3>Lo que se desperdicia <span class="pill bad">Mucho</span></h3>
+      <p>Tienes +450 clientes felices que NO han dejado reseña visible en ningún canal público. Cada reseña no pedida = un cliente futuro que no te encuentra.</p>
+      <p><b>Implementación mínima:</b> mensaje automático WhatsApp 3 días después de la sesión: <i>"¡Hola [nombre]! ¿Qué tal va tu tattoo? Si te ha encantado, déjanos una reseña aquí ⭐ {link Google}. Si hay algo que mejorar, dínoslo a nosotros primero."</i></p>
+    </div>
+  </div>
+</section>
+
+<section id="contenido">
+  <h2><span class="num">12</span> Contenido / SEO</h2>
+  <div class="card">
+    <p><span class="pill bad">Inexistente</span></p>
+    <p>La web no tiene blog, no hay artículos, no hay guías, no hay FAQs. Para SEO local de tatuajes hay queries con tráfico alto y baja competencia que estás cediendo a la competencia:</p>
+    <table style="margin-top:12px">
+      <thead><tr><th>Query objetivo</th><th>Intención</th><th>Pieza recomendada</th></tr></thead>
+      <tbody>
+        <tr><td>"how much does a tattoo cost in miami"</td><td>Investigación de precio</td><td>Guía de precios con tu rango Booksy</td></tr>
+        <tr><td>"is getting a tattoo painful"</td><td>Objeción miedo</td><td>Artículo + vídeo Yordan respondiendo</td></tr>
+        <tr><td>"how to take care of a new tattoo"</td><td>Post-venta</td><td>Checklist descargable (lead magnet)</td></tr>
+        <tr><td>"first time tattoo what to know"</td><td>Cliente nuevo</td><td>Guía completa con tu "First Tattoo Bundle"</td></tr>
+        <tr><td>"tattoo shop calle ocho miami"</td><td>Local intent</td><td>Página local específica con Schema.org</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="competencia">
+  <h2><span class="num">13</span> Competencia directa</h2>
+  <p class="lead">Comparativa con los 3 competidores más fuertes en Calle Ocho / Little Havana.</p>
+
+  <table>
+    <thead><tr><th></th><th class="you"><strong>Detail Tattoo</strong></th><th>Ocho Placas</th><th>Piajas Ink</th><th>Tattoo Eight</th></tr></thead>
+    <tbody>
+      <tr><td><b>Años activo</b></td><td class="you">7 (desde 2018)</td><td>23+ (desde 2001)</td><td>~10</td><td>~10</td></tr>
+      <tr><td><b>Ubicación</b></td><td class="you">Calle Ocho</td><td>Calle Ocho</td><td>Calle Ocho</td><td>SW 8th St</td></tr>
+      <tr><td><b>Web propia</b></td><td class="you">Sí (básica)</td><td>Sí (más pulida)</td><td>Sí (la "best in Miami")</td><td>Sí</td></tr>
+      <tr><td><b>Reseñas Yelp visibles</b></td><td class="you">Pocas</td><td>Decenas</td><td>Decenas</td><td>36+</td></tr>
+      <tr><td><b>Posicionamiento</b></td><td class="you">Custom + piercing</td><td>"Gold standard"</td><td>"Best in Miami"</td><td>Volumen</td></tr>
+      <tr><td><b>Estilos destacados</b></td><td class="you">Custom (sin claim)</td><td>American Traditional, Fineline, realismo</td><td>Custom</td><td>Walk-in friendly</td></tr>
+      <tr><td><b>Precio visible en web</b></td><td class="you">No</td><td>Parcial</td><td>Parcial</td><td>Sí</td></tr>
+      <tr><td><b>Activo en SEO</b></td><td class="you">No</td><td>Sí</td><td>Sí</td><td>Medio</td></tr>
+    </tbody>
+  </table>
+
+  <div class="alert warn" style="margin-top:18px">
+    <div class="icon">!</div>
+    <div>
+      <h4>Diagnóstico competitivo</h4>
+      <p>Ocho Placas y Piajas Ink están en la misma calle, llevan más tiempo, y se posicionan como "best in Miami" / "gold standard". No puedes pelearte con esos claims — no tienes su histórico. <b>Lo que SÍ puedes hacer:</b> ocupar nichos que ellos no tocan claramente — <i>"el estudio donde nunca empezamos hasta que el boceto te enamora" (proceso), "the bilingual studio of Calle Ocho — hablamos como tú" (idioma + cultura), "best curated ear specialist in Little Havana" (sub-nicho de piercing)</i>. Diferenciarte por procedimiento o nicho, no por veteranía.</p>
+    </div>
+  </div>
+</section>
+
+<section id="incoherencias">
+  <h2><span class="num">14</span> Incoherencias detectadas</h2>
+  <p class="lead">Pequeños conflictos entre canales que minan la confianza.</p>
+
+  <table>
+    <thead><tr><th>Dónde</th><th>Qué dice / hace</th><th>Por qué chirría</th></tr></thead>
+    <tbody>
+      <tr><td>Web</td><td>"99,99% RATINGS"</td><td>Suena inventado. Resta credibilidad — un número exacto y real (4.9⭐ en 23 reseñas) convence más.</td></tr>
+      <tr><td>Web vs Booksy</td><td>Web sin precios, Booksy con precios</td><td>Cliente que entra por web tiene que clicar fuera para informarse — fricción.</td></tr>
+      <tr><td>Web vs IG</td><td>Web no enlaza a IG (@detail_tattooshop)</td><td>Quien llega de un ad de IG va a la web → busca IG → no lo encuentra → desconfianza.</td></tr>
+      <tr><td>+450 clientes vs 1 reseña</td><td>Claim huge, prueba mínima</td><td>Cuanto más grande el claim sin prueba, más sospechoso.</td></tr>
+      <tr><td>Inglés en web vs español en TikTok</td><td>Identidad cultural mixta</td><td>No es malo, pero NO se aprovecha. Versión bilingüe haría justicia al posicionamiento.</td></tr>
+      <tr><td>Estilo "custom" sin especialidad</td><td>Genérico</td><td>"Custom tattoo" lo dice todo el mundo. Falta un sub-nicho identificable (fine-line, color realism, lettering, etc.).</td></tr>
+      <tr><td>"BOOK AN APPOINTMENT" lleva a kotizar.com</td><td>Salida del dominio</td><td>Cliente abandona tu marca para reservar — desconfianza + pérdida de tracking.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="plan">
+  <h2><span class="num">15</span> Plan de acción priorizado</h2>
+  <p class="lead">Ordenado por impacto / esfuerzo. Las 4 primeras son inversión mínima con retorno mayor.</p>
+
+  <table>
+    <thead><tr><th>Prioridad</th><th>Acción</th><th>Impacto</th><th>Esfuerzo</th><th>Área</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill bad">P0</span></td><td>Crear / reclamar ficha Google Business + 30 fotos + descripción optimizada</td><td>Muy alto</td><td>2-3h</td><td>SEO local</td></tr>
+      <tr><td><span class="pill bad">P0</span></td><td>Sistema de pedir reseña automático (WhatsApp +3 días) hacia Google + Booksy</td><td>Muy alto</td><td>1h setup</td><td>Reputación</td></tr>
+      <tr><td><span class="pill bad">P0</span></td><td>Instalar Meta Pixel + GA4 + Schema.org en la web</td><td>Alto</td><td>1-2h</td><td>Tracking</td></tr>
+      <tr><td><span class="pill bad">P0</span></td><td>Traer formulario al dominio + botón WhatsApp flotante + links a IG/FB</td><td>Alto</td><td>3-4h</td><td>Web/UX</td></tr>
+      <tr><td><span class="pill warn">P1</span></td><td>Empaquetar oferta: 3 paquetes cerrados (First Tattoo / Couples / Curated Ear)</td><td>Alto</td><td>2h</td><td>Oferta</td></tr>
+      <tr><td><span class="pill warn">P1</span></td><td>Reescribir copy de la home centrado en el cliente</td><td>Medio-Alto</td><td>2-3h</td><td>Copy</td></tr>
+      <tr><td><span class="pill warn">P1</span></td><td>Mostrar precios en la web (rangos claros)</td><td>Medio-Alto</td><td>1h</td><td>Oferta</td></tr>
+      <tr><td><span class="pill warn">P1</span></td><td>Versión bilingüe ES/EN de la web</td><td>Medio</td><td>1 día</td><td>Localización</td></tr>
+      <tr><td><span class="pill warn">P1</span></td><td>Importar testimonios reales a la web (Google/Yelp/Booksy)</td><td>Medio</td><td>2h</td><td>Reputación</td></tr>
+      <tr><td><span class="pill info">P2</span></td><td>Programa de referidos formal ("Trae a un amigo y cobras 20%")</td><td>Medio</td><td>4h setup</td><td>Retención</td></tr>
+      <tr><td><span class="pill info">P2</span></td><td>Email post-venta (día 3 cuidados, día 30 reseña, día 90 nueva idea)</td><td>Medio</td><td>1 día</td><td>Retención</td></tr>
+      <tr><td><span class="pill info">P2</span></td><td>Lanzar 5 ads Meta (cuando tracking esté listo)</td><td>Medio-Alto</td><td>3h setup</td><td>Ads</td></tr>
+      <tr><td><span class="pill info">P2</span></td><td>Definir sub-nicho de especialidad (ej: curated ear, fine-line, color)</td><td>Estratégico</td><td>1 día</td><td>Posicionamiento</td></tr>
+      <tr><td><span class="pill info">P3</span></td><td>Blog SEO con 5 artículos pilares (precios, dolor, cuidados, primer tattoo, Calle Ocho)</td><td>Medio largo plazo</td><td>1 semana</td><td>SEO</td></tr>
+      <tr><td><span class="pill info">P3</span></td><td>Canal YouTube con vídeos largos (time-lapses 10 min + Yordan respondiendo dudas)</td><td>Medio largo plazo</td><td>Continuo</td><td>Contenido</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="quickwins" id="quick-wins">
+  <h2><span class="num">16</span> Quick wins (esta semana)</h2>
+
+  <div class="quickwin">
+    <h4>1. Crear ficha de Google Business</h4>
+    <p>Reclama o crea la ficha en google.com/business. Sube 30 fotos del estudio, Yordan trabajando y trabajos terminados. Selecciona categoría "Tattoo shop" + "Body piercing studio".</p>
+    <p><b>Resultado esperado:</b> aparecer en Google Maps para "tattoo shop near me" en 7-14 días. Tráfico orgánico nuevo y gratuito a partir de la semana 2. <i>Tiempo: 2-3h.</i></p>
+  </div>
+
+  <div class="quickwin">
+    <h4>2. Mensaje automático WhatsApp pidiendo reseña Google</h4>
+    <p>3 días después de cada sesión, mensaje predefinido: <i>"¡Hola [nombre]! Espero que estés enamorado/a de tu tattoo. Si te ha encantado, ¿nos dejas 1 minuto de tu tiempo para una reseña en Google? 👉 [link corto]. Si hay algo a mejorar, dímelo a mí directamente primero. — Yordan"</i></p>
+    <p><b>Resultado esperado:</b> +20-40 reseñas en Google en 30 días → salto inmediato en visibilidad local. <i>Tiempo: 1h setup.</i></p>
+  </div>
+
+  <div class="quickwin">
+    <h4>3. Instalar Meta Pixel + GA4 en detailtattoo.com</h4>
+    <p>Aunque no hagas ads YA, instala los tags para empezar a acumular datos. Cuando dentro de 3 meses decidas hacer ads, ya tendrás 90 días de audiencia construida. Sin esto cualquier campaña empieza desde cero.</p>
+    <p><b>Resultado esperado:</b> Audiencias de retargeting "calientes" listas para usar el día que enciendas campañas. <i>Tiempo: 1-2h.</i></p>
+  </div>
+
+  <div class="quickwin">
+    <h4>4. Añadir botón WhatsApp flotante + link a Instagram en la web</h4>
+    <p>Botón verde abajo a la derecha con mensaje predefinido "Hola, vi su web y quiero info sobre un tatuaje" hacia (786) 461-0600. Y enlaces visibles a @detail_tattooshop en header y footer.</p>
+    <p><b>Resultado esperado:</b> +30-50% en mensajes entrantes desde mobile (que es donde está la mayoría del tráfico). <i>Tiempo: 30 min.</i></p>
+  </div>
+
+  <div class="quickwin">
+    <h4>5. Mostrar precios en la web (rangos claros)</h4>
+    <p>Una sección "Precios" con los rangos de Booksy ya públicos: piercing desde $50, tatuaje simple desde $80, palm desde $200, cuarto de manga desde $700. Eliminar el misterio reduce fricción de decisión.</p>
+    <p><b>Resultado esperado:</b> menos consultas "cuánto cuesta", más reservas directas. <i>Tiempo: 1h.</i></p>
+  </div>
+</section>
+
+<footer>
+  Auditoría de negocio digital generada el 24 de junio de 2026 · Detail Tattoo (detailtattoo.com) · Miami, FL<br>
+  Versión 1.0 · Para ampliar cualquier área pregunta a tu equipo de auditoría.
+</footer>
+
+</main>
+</div>
+</div>
+</body>
+</html>
